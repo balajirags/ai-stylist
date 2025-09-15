@@ -77,7 +77,7 @@ class SmartFashionAssistant:
 
 if __name__ == "__main__":
     sfa = SmartFashionAssistant()
-    question = "I am a women and need to dress for an indian wedding. The price should be above 2000 and less than 10000"
+    question = "I am a women and need to dress for an indian wedding?"
     print(f"Question: {question}")
     answer = sfa.rag(question)
     print("Answer:")

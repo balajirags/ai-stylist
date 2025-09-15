@@ -1,0 +1,11 @@
+
+qdrant-client[fastembed]>=1.14.2
+python-dotenv
+fastapi
+uvicorn
+pydantic
+tqdm
+anthropic
+langchain-anthropic
+langchain
+prefect

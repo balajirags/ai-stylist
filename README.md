@@ -20,10 +20,50 @@ This project streamlines the shopping experience, making it easier for users to 
 - Integration with Anthropic LLM and Qdrant vector database
 - Modular, extensible Python codebase
 
+## Getting Started
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+- Python 3.10.18 or above
+
+### Running Locally
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone <repository-url>
+   cd ai-stylist
+   ```
+
+2. **Set up the environment:**
+
+   Create a `.env` file in the root of the project and add your Anthropic API key:
+
+   ```
+   ANTHROPIC_API_KEY=<your-api-key>
+   ```
+
+3. **Run the application:**
+
+   ```bash
+   docker-compose up
+   ```
+
+   This will start the Qdrant vector database and run the Prefect ingestion workflow to populate the database with the product catalog.
+
 ## Usage
-Run the assistant and ask questions like:
+
+Once the ingestion is complete, you can use the `rag/fashion_assistant.py` or `rag/smart_fashion_assistant.py` scripts to ask questions to the AI Stylist.
+
+### Examples
+
+Here are a few examples of questions you can ask:
+
 - "I am a woman and need business casual attire."
 - "Looking for a red dress for a party under 2000 INR."
 - "Suggest an outfit for an Indian wedding."
+- "I am Men in 40s,looking for Shirt to match my black jeans and boots"
 
 The AI Stylist will recommend products and explain why they are suitable for your needs.
