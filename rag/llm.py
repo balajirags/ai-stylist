@@ -11,7 +11,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 class LLM:
     def __init__(self):
         self.retriever = ProductSearch()
-        self.llm_client = ChatAnthropic(model_name="claude-3-5-sonnet-20240620", api_key=settings.ANTHROPIC_API_KEY, temperature=0.2, max_tokens=512)
+        self.llm_client = ChatAnthropic(model_name="claude-3-5-sonnet-20240620", api_key=settings.LLM_API_KEY, temperature=0.2, max_tokens=512)
 
     def sanitize_results(self, search_results):
         context = ""

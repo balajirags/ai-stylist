@@ -14,8 +14,8 @@ class Settings(BaseModel):
     EMBEDDING_DIM: int = int(os.getenv("EMBEDDING_DIM", "384"))
 
 
-    ANTHROPIC_API_KEY: str | None = os.getenv("ANTHROPIC_API_KEY")
-    LLM_MODEL: str = os.getenv("LLM_MODEL", "claude-3-5-sonnet-20240620")
+    LLM_API_KEY: str | None = os.getenv("LLM_API_KEY")
+    LLM_MODEL: str = os.getenv("LLM_MODEL")
     LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.2"))
     LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "1024"))
 

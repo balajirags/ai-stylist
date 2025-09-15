@@ -10,7 +10,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 class SmartFashionAssistant:
     def __init__(self):
         self.retriever = ProductSearch()
-        self.llm_client = ChatAnthropic(model_name="claude-3-5-sonnet-20240620", api_key=settings.ANTHROPIC_API_KEY, temperature=0.2, max_tokens=512)
+        self.llm_client = ChatAnthropic(model_name="claude-3-5-sonnet-20240620", api_key=settings.LLM_API_KEY, temperature=0.2, max_tokens=512)
 
     def sanitize_results(self, search_results):
         context = ""
@@ -64,7 +64,6 @@ class SmartFashionAssistant:
         product_types = self.extract_list(concepts_response.content)
         if len(product_types) > 0:
             search_results = self.retriever.multi_query_hybrid_search(product_types, limit=5)
-            print(f"search results - {search_results}")
             context = self.sanitize_results(search_results)
             recommendation_chain = self.build_recommendation_prompt() | self.llm_client
             response = recommendation_chain.invoke({"question": question, "context": context})
