@@ -1,3 +1,4 @@
+from prefect import task, flow
 from tqdm.auto import tqdm
 from qdrant_client import QdrantClient, models
 from qdrant_client.models import PointStruct
@@ -7,7 +8,8 @@ import csv
 
 DATA_FILE = Path(__file__).resolve().parents[1] / "data" / "products_catalog.csv"
 
-def load_products(data_file):
+@task
+def load_products_task(data_file):
     products = []
     with open(data_file, 'r') as f_in:
         reader = csv.DictReader(f_in)
@@ -25,9 +27,18 @@ def load_products(data_file):
     print(f"Number of products: {len(products)}")
     return products
 
-def create_collection_if_needed(client, collection_name):
+@task
+def create_collection_task(collection_name):
+    client = QdrantClient(url=settings.QDRANT_URL)
     if not client.collection_exists(collection_name):
-        client.create_collection(
+        create_collection(collection_name, client)
+    else:
+        print(f"Collection {collection_name} already exists. Dropping and recreating.")
+        client.delete_collection(collection_name)
+        create_collection(collection_name, client)
+
+def create_collection(collection_name, client):
+    client.create_collection(
             collection_name=collection_name,
             vectors_config={
                 "jina-small": models.VectorParams(
@@ -41,7 +52,8 @@ def create_collection_if_needed(client, collection_name):
             }
         )
 
-def build_points(products, dense_model_handle, sparse_model_handle):
+@task
+def build_points_task(products, dense_model_handle, sparse_model_handle):
     points = []
     for idx, prod in enumerate(products):
         prod_text = prod['product_name'] + ' ' + prod['description']
@@ -53,32 +65,28 @@ def build_points(products, dense_model_handle, sparse_model_handle):
     print(f"points - {len(points)}")
     return points
 
-def upsert_points(client, collection_name, points):
-    client.upsert(
-        collection_name=collection_name,
-        points=points
-    )
-
-def batch_upsert_points(client, collection_name, points, batch_size=2000):
+@task
+def batch_upsert_points_task(collection_name, points, batch_size=2000):
+    client = QdrantClient(url=settings.QDRANT_URL)
     try:
         for i in range(0, len(points), batch_size):
             batch = points[i:i+batch_size]
-            upsert_points(client, collection_name, batch)
+            client.upsert(
+                collection_name=collection_name,
+                points=batch
+            )
             print(f"Upserted points {i} to {i+len(batch)}")
     except Exception as e:
         print(f"Error during upsert: {e}")
     finally:
         print("Upsert process completed.")
 
-def main():
-    products = load_products(DATA_FILE)
-    client = QdrantClient(url=settings.QDRANT_URL)
-    sparse_model_handle = settings.SPARSE_EMBEDDING_MODEL
-    dense_model_handle = settings.DENSE_EMBEDDING_MODEL
-    create_collection_if_needed(client, settings.COLLECTION)
-    points = build_points(products, dense_model_handle, sparse_model_handle)
-    print("Starting to insert product data")
-    batch_upsert_points(client, settings.COLLECTION, points)
+@flow
+def ingest_data_flow():
+    products = load_products_task(DATA_FILE)
+    create_collection_task(settings.COLLECTION)
+    points = build_points_task(products, settings.DENSE_EMBEDDING_MODEL, settings.SPARSE_EMBEDDING_MODEL)
+    batch_upsert_points_task(settings.COLLECTION, points)
 
 if __name__ == "__main__":
-    main()
+    ingest_data_flow()

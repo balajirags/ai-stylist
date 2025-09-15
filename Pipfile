@@ -13,6 +13,8 @@ tqdm = "*"
 anthropic = "*"
 langchain-anthropic = "*"
 langchain = "*"
+dlt = {extras = ["qdrant"], version = "*"}
+prefect = "*"
 
 [dev-packages]
 

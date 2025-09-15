@@ -3,7 +3,6 @@ from shared.config import settings
 from langchain_anthropic import ChatAnthropic
 from langchain.prompts import PromptTemplate
 import os
-from pprint import pprint
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -78,7 +77,7 @@ class SmartFashionAssistant:
 
 if __name__ == "__main__":
     sfa = SmartFashionAssistant()
-    question = "I am a women and need to dress for an indian wedding"
+    question = "I am a women and need to dress for an indian wedding. The price should be above 2000 and less than 10000"
     print(f"Question: {question}")
     answer = sfa.rag(question)
     print("Answer:")
