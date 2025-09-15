@@ -1,0 +1,39 @@
+# Python .gitignore
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+*.sqlite3
+*.db
+.env
+.env.*
+*.env
+*.DS_Store
+*.coverage
+.coverage.*
+.cache/
+.mypy_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+.vscode/
+.idea/
+*.bak
+*.swp
+*.tmp
+Pipfile.lock
+# Jupyter Notebook
+*.ipynb
+# VS Code settings
+.vscode/
+# macOS
+.DS_Store
+# Test output
+htmlcov/
+# Local dev
+local_settings.py
