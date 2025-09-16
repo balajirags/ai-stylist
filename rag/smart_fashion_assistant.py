@@ -3,6 +3,7 @@ from shared.config import settings
 from langchain_anthropic import ChatAnthropic
 from langchain.prompts import PromptTemplate
 import os
+import json
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -51,7 +52,43 @@ class SmartFashionAssistant:
             input_variables=["question", "context"],
             template=prompt_template,
         )
+    
+    def build_evaluation_prompt(self):
+        evaluation_prompt = PromptTemplate(
+            input_variables=["question", "answer", "context"],
+            template="""
+                You are an expert evaluator for a RAG system.
+                Your task is to analyze the relevance of the generated answer to the given question.
+                Based on the relevance of the generated answer, you will classify it
+                as "NON_RELEVANT", "PARTLY_RELEVANT", or "RELEVANT".
 
+                Here is the data for evaluation:
+
+                Question: {question}
+                Generated Answer: {answer}
+
+                Please analyze the content and context of the generated answer in relation to the question
+                and provide your evaluation in parsable JSON without using code blocks:
+                {{
+                    "Relevance": "NON_RELEVANT" | "PARTLY_RELEVANT" | "RELEVANT",
+                    "Explanation": "[Provide a brief explanation for your evaluation]"
+                }}
+            """.strip()
+        )
+        return evaluation_prompt
+    
+
+    def evaluate_relevance(self, question, answer):
+        evaluation_chain = self.build_evaluation_prompt() | self.llm_client
+        evaluation_response = evaluation_chain.invoke({"question": question, "answer": answer})
+        content, metadata = evaluation_response.content, evaluation_response.usage_metadata
+        try:
+            json_eval = json.loads(content)
+            return json_eval,metadata
+        except json.JSONDecodeError:
+            result = {"Relevance": "UNKNOWN", "Explanation": "Failed to parse evaluation", "usage_metadata": {"total_tokens": 0, "input_tokens": 0, "output_tokens": 0}}
+            return result, metadata
+        
     def extract_list(self, content):
         if len(content) > 0:
             return content.split(",")
@@ -71,17 +108,23 @@ class SmartFashionAssistant:
                 response = response.content[0]
             else:
                 response = response.content
-            return response
+            eval_response, metadata = self.evaluate_relevance(question, response)
+            return (response, eval_response, metadata)
         return "Question seems irrelevant to the Fashion products catalog."
+
 
 """
 if __name__ == "__main__":
     sfa = SmartFashionAssistant()
     question = "I am a women and need to dress for an indian wedding?"
     print(f"Question: {question}")
-    answer = sfa.rag(question)
+    response, evaluation, metadata = sfa.rag(question)
     print("Answer:")
-    print(answer)
+    print(response)
+    print()
+    print("Evaluation:")
+    print(evaluation["Relevance"])
+    print(metadata["total_tokens"], metadata["input_tokens"], metadata["output_tokens"])
     print()
 
-    """
+"""
