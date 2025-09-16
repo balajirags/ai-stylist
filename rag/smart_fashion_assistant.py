@@ -74,6 +74,7 @@ class SmartFashionAssistant:
             return response
         return "Question seems irrelevant to the Fashion products catalog."
 
+"""
 if __name__ == "__main__":
     sfa = SmartFashionAssistant()
     question = "I am a women and need to dress for an indian wedding?"
@@ -82,3 +83,5 @@ if __name__ == "__main__":
     print("Answer:")
     print(answer)
     print()
+
+    """

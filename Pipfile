@@ -15,6 +15,7 @@ langchain-anthropic = "*"
 langchain = "*"
 dlt = {extras = ["qdrant"], version = "*"}
 prefect = "*"
+questionary = "*"
 
 [dev-packages]
 
