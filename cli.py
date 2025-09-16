@@ -9,14 +9,25 @@ def main():
     print("You can exit the program at any time when prompted.")
     while True:
         question = questionary.text("What is you Fashion search query?").ask()
-        response, evaluation, metadata = sfa.rag(question)
+        #response, evaluation, metadata = sfa.rag(question)
+        answer, metadata, raw_response = sfa.rag(question)
         print("Answer:")
-        print(response)
+        print(answer)
         print()
+        print("Usage Metadata:")
+        print(f"Input token - {metadata['input_tokens']}, Output tokens - {metadata['output_tokens']}, Total tokens - {metadata['total_tokens']}")
+        print(f"model:{raw_response.response_metadata['model']}")
+        print()
+
+        print(" ----- Evaluation ----")
+        eval_response, metadata, raw_response = sfa.evaluate_relevance(question, answer)
         print("Evaluation:")
-        print(evaluation["Relevance"])
-        print(metadata["total_tokens"], metadata["input_tokens"], metadata["output_tokens"])
+        print(eval_response)
         print()
+        print("metadata:")
+        print(f"Input token - {metadata['input_tokens']}, Output tokens - {metadata['output_tokens']}, Total tokens - {metadata['total_tokens']}")
+        print(" -----------------")
+
         feedback = questionary.select(
             "How would you rate this response?",
             choices=["+1 (Positive)", "-1 (Negative)", "Pass (Skip feedback)"],
