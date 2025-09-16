@@ -38,3 +38,4 @@ htmlcov/
 # Local dev
 local_settings.py
 qdrant_storage/
+postgres_data/

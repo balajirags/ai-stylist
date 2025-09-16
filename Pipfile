@@ -16,6 +16,10 @@ langchain = "*"
 dlt = {extras = ["qdrant"], version = "*"}
 prefect = "*"
 questionary = "*"
+psycopg2-binary = "*"
+flask = "*"
+gunicorn = "*"
+jupyter = "*"
 
 [dev-packages]
 

@@ -1,4 +1,3 @@
-
 qdrant-client[fastembed]>=1.14.2
 python-dotenv
 fastapi
@@ -8,4 +7,10 @@ tqdm
 anthropic
 langchain-anthropic
 langchain
+dlt[qdrant]
 prefect
+questionary
+psycopg2-binary
+flask
+gunicorn
+jupyter

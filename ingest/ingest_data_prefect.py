@@ -32,11 +32,7 @@ def create_collection_task(collection_name):
     client = QdrantClient(url=settings.QDRANT_URL)
     if not client.collection_exists(collection_name):
         create_collection(collection_name, client)
-    else:
-        print(f"Collection {collection_name} already exists. Dropping and recreating.")
-        client.delete_collection(collection_name)
-        create_collection(collection_name, client)
-
+        
 def create_collection(collection_name, client):
     client.create_collection(
             collection_name=collection_name,
